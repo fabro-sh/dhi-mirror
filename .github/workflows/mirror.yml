@@ -16,12 +16,12 @@ jobs:
       fail-fast: false
       matrix:
         image:
-          - source: dhi.io/alpine:3.22-dev
-            repo: ghcr.io/fabro-sh/dhi-alpine
-            tag: 3.22-dev
-          - source: dhi.io/alpine:3.22
-            repo: ghcr.io/fabro-sh/dhi-alpine
-            tag: "3.22"
+          - source: dhi.io/alpine-base:3.23-dev
+            repo: ghcr.io/fabro-sh/dhi-alpine-base
+            tag: 3.23-dev
+          - source: dhi.io/alpine-base:3.23
+            repo: ghcr.io/fabro-sh/dhi-alpine-base
+            tag: "3.23"
     env:
       DHI_USERNAME: ${{ vars.DHI_USERNAME }}
       DHI_TOKEN: ${{ secrets.DHI_TOKEN }}

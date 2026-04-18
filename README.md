@@ -10,8 +10,8 @@ DHI requires an authenticated pull against a subscription account. Mirroring to 
 
 | Source (dhi.io) | Destination (ghcr.io) |
 | --- | --- |
-| `dhi.io/alpine:3.22-dev` | `ghcr.io/fabro-sh/dhi-alpine:3.22-dev` |
-| `dhi.io/alpine:3.22` | `ghcr.io/fabro-sh/dhi-alpine:3.22` |
+| `dhi.io/alpine-base:3.23-dev` | `ghcr.io/fabro-sh/dhi-alpine-base:3.23-dev` |
+| `dhi.io/alpine-base:3.23` | `ghcr.io/fabro-sh/dhi-alpine-base:3.23` |
 
 Each source tag is mirrored with two destination tags:
 
@@ -23,19 +23,19 @@ Each source tag is mirrored with two destination tags:
 Moving tag (auto-updates on nightly run):
 
 ```dockerfile
-FROM ghcr.io/fabro-sh/dhi-alpine:3.22-dev
+FROM ghcr.io/fabro-sh/dhi-alpine-base:3.23-dev
 ```
 
 Dated pin (immutable):
 
 ```dockerfile
-FROM ghcr.io/fabro-sh/dhi-alpine:3.22-dev-2026-04-18
+FROM ghcr.io/fabro-sh/dhi-alpine-base:3.23-dev-2026-04-18
 ```
 
 For strict reproducibility, pin by digest:
 
 ```sh
-docker buildx imagetools inspect ghcr.io/fabro-sh/dhi-alpine:3.22-dev \
+docker buildx imagetools inspect ghcr.io/fabro-sh/dhi-alpine-base:3.23-dev \
   --format '{{json .Manifest.Digest}}'
 ```
 
