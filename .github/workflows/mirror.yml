@@ -28,6 +28,11 @@ jobs:
       GHCR_USERNAME: ${{ github.actor }}
       GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
+      - name: Check out certificate verification fixtures
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
       - name: Login to dhi.io
         run: echo "$DHI_TOKEN" | docker login dhi.io -u "$DHI_USERNAME" --password-stdin
 
@@ -38,12 +43,25 @@ jobs:
         id: date
         run: echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
 
+      - name: Resolve and verify exact source before mirroring
+        id: source
+        env:
+          SOURCE_IMAGE: ${{ matrix.image.source }}
+        run: |
+          digest=$(docker buildx imagetools inspect "$SOURCE_IMAGE" --format '{{.Manifest.Digest}}')
+          [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]
+          image="$SOURCE_IMAGE@$digest"
+          scripts/verify-image-trust.sh "$image"
+          echo "image=$image" >> "$GITHUB_OUTPUT"
+
       - name: Mirror ${{ matrix.image.source }}
+        env:
+          VERIFIED_SOURCE: ${{ steps.source.outputs.image }}
         run: |
           docker buildx imagetools create \
             --tag ${{ matrix.image.repo }}:${{ matrix.image.tag }} \
             --tag ${{ matrix.image.repo }}:${{ matrix.image.tag }}-${{ steps.date.outputs.date }} \
-            ${{ matrix.image.source }}
+            "$VERIFIED_SOURCE"
 
       - name: Show mirrored digest
         run: docker buildx imagetools inspect ${{ matrix.image.repo }}:${{ matrix.image.tag }}
