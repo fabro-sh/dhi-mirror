@@ -59,3 +59,15 @@ Edit the `matrix.image` list in `.github/workflows/mirror.yml`. Each entry is `{
 ## How it works
 
 The workflow uses `docker buildx imagetools create` to copy the multi-arch manifest list from `dhi.io` to `ghcr.io` without pulling layers through the runner — the registries handle the blob transfer directly.
+
+## Certificate trust gate
+
+Before publishing, inspect each Linux platform's system CA bundle without
+executing source-image code. All twelve checked-in eMudhra certificate chains
+must fail verification. Missing bundles or inconclusive checks stop publication.
+The fixtures come from https://emudhra.we-have-a-problem.com/chains.zip.
+
+This gate does not repair an old source image. Select and verify fixed upstream
+images before publication can resume. Java and other runtimes with private trust
+stores need separate validation; passing the native CA gate alone does not
+establish full runtime coverage.
